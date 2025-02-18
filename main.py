@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from auth.api import auth_router
 # from unmask.api import unmask_router
-# from uploads.api import upload_router
+from uploads.api import upload_router
 # from blockchain.api import bchain_router
 from starlette.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
@@ -17,7 +17,7 @@ app.add_middleware(
 )
 app.include_router(auth_router, prefix="/api")
 # app.include_router(bchain_router, prefix="/api")
-# app.include_router(upload_router, prefix="/api")
+app.include_router(upload_router, prefix="/api")
 # app.include_router(unmask_router, prefix="/api")
 
 # app.mount("/api/dwd", StaticFiles(directory="assets"), name="download")

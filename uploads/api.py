@@ -1,19 +1,29 @@
-from fastapi import APIRouter, UploadFile, File, HTTPException
-from utils import invoke_uid, image_extensions, video_extensions, is_youtube_url, yt_downloader, is_instagram_url, \
-    is_twitter_url, insta_downloader
+from typing import Annotated
+
+from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
+
+from auth.api import get_current_optional_user_from_cookie
+from utils import (invoke_uid, image_extensions, video_extensions, is_youtube_url, yt_downloader,
+                   is_instagram_url,
+                   is_twitter_url, insta_downloader)
 
 upload_router = APIRouter(tags=['uploads'])
 
 
-@upload_router.post("/file/{client_address:str}/upload")
-async def upload_file(client_address: str, file: UploadFile = File(...)):
+@upload_router.post("/file/upload")
+async def upload_file(file: UploadFile = File(...),
+                      user: Annotated[dict, Depends(get_current_optional_user_from_cookie)] = None):
+    if not user:
+        userid = 'xxx'
+    else:
+        userid = str(user['_id'])
     fid = invoke_uid()
     print(file.filename)
     file_name = file.filename
     if file_name.split('.')[-1].lower() in image_extensions:
-        file_name = f'{client_address}_{fid}.jpg'
+        file_name = f'{userid}_{fid}.jpg'
     elif file_name.split('.')[-1].lower() in video_extensions:
-        file_name = f'{client_address}_{fid}.mp4'
+        file_name = f'{userid}_{fid}.mp4'
     else:
         raise HTTPException(401, '')
     with open(f'assets/{file_name}', "wb") as f:
@@ -21,7 +31,7 @@ async def upload_file(client_address: str, file: UploadFile = File(...)):
     return {'id': file_name}
 
 
-@upload_router.get("/link/{client_address:str}/upload")
+@upload_router.get("/link/upload")
 async def upload_link(client_address: str, link: str):
     print(link)
     fid = f'{client_address}_{invoke_uid()}.mp4'
@@ -30,7 +40,6 @@ async def upload_link(client_address: str, link: str):
     elif is_instagram_url(link):
         insta_downloader(link, fid)
     elif is_twitter_url(link):
-        print('twitter')
         return False
     else:
         return False
