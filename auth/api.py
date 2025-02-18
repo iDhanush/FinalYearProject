@@ -1,10 +1,12 @@
-from global_var import Var
 from datetime import timedelta
 from typing import Annotated, Optional
+
+from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+from fastapi.security import OAuth2PasswordRequestForm
 from passlib.context import CryptContext
 from pydantic import BaseModel, EmailStr, Field
-from fastapi.security import OAuth2PasswordRequestForm
-from fastapi import APIRouter, Depends, HTTPException, status, Response, Cookie
+
+from global_var import Var
 from .utils import verify_password, get_password_hash, create_access_token, get_user_from_token
 
 # Router setup
@@ -57,6 +59,16 @@ async def get_current_user_from_cookie(
             detail="Not authenticated",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    user = await get_user_from_token(access_token)
+    return user
+
+
+async def get_current_optional_user_from_cookie(
+        access_token: Annotated[Optional[str], Cookie()] = None
+) -> [dict, None]:
+    if access_token is None:
+        return
 
     user = await get_user_from_token(access_token)
     return user
