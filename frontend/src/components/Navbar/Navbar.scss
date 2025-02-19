@@ -60,20 +60,19 @@
   .cssbuttons-io-button:active {
     box-shadow: 0 0.3em 1em -0.5em #4d36d0be;
   }
-  .login-btn {  background: linear-gradient(
+  .login-btn {
+    background: linear-gradient(
       0deg,
       rgba(77, 54, 208, 1) 0%,
       rgba(132, 116, 254, 1) 100%
     );
     color: white;
-  padding:15px;
-  border-radius: 10px;
-
-}
-.login-img {
-  height: 40px;
-}
-    
+    padding: 15px;
+    border-radius: 10px;
+  }
+  .login-img {
+    height: 40px;
+  }
 
   .wallet {
     display: flex;
@@ -161,7 +160,7 @@
 }
 
 .alephium-connect-button .primary > div > div::before {
-  content:url('../../assets/alephium.svg');
+  content: url("../../assets/alephium.svg");
   width: 13px;
   margin-left: 10px;
   margin-right: 15px;

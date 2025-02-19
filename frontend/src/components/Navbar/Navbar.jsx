@@ -1,16 +1,31 @@
 import React, { useState, useEffect } from "react";
 import "./Navbar.scss";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useStore } from "../../context/StoreContext";
 
 import { AlephiumConnectButton, useWallet } from "@alephium/web3-react";
+import { baseUrl } from "../../constant";
 
 const Navbar = ({ page }) => {
+  const navigate = useNavigate();
+  const { user, setUser } = useStore();
 
-  useEffect(() => {
-    
-  }, [])
-
+  const logOut = async () => {
+    const res = await fetch(`${baseUrl}logout`, {
+      method: "post",
+      headers: new Headers({
+        "ngrok-skip-browser-warning": "69420",
+      }),
+    });
+    const result = await res.json();
+    console.log(result);
+    if (result.message) {
+      navigate("/");
+      setUser(null);
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
   return (
     <>
       <nav className="nav">
@@ -23,13 +38,22 @@ const Navbar = ({ page }) => {
             <li>
               <NavLink to="/nft">My certificates</NavLink>
             </li>
-           
+
             <li>
               {/* <NavLink to="/certification">Certification</NavLink> */}
             </li>
           </ul>
-          <div className="login-btn">
-          Login
+          <div
+            className="login-btn"
+            onClick={() => {
+              if (user != null) {
+                logOut();
+              } else {
+                navigate("/login");
+              }
+            }}
+          >
+            {user ? "Login Out" : "Login"}
           </div>
           {
             //   <button

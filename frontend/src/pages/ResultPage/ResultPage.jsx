@@ -10,7 +10,7 @@ import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import SpinLoader from "../../components/SpinLoader/SpinLoader";
 
-const ResultPage = () => {
+const ResultPage = ({ popUp, setPopup }) => {
   const customProgressBarStyle = {
     width: "200px", // Adjust the width of the progress bar
     height: "200px", // Adjust the height of the progress bar
@@ -66,7 +66,7 @@ const ResultPage = () => {
     // After successful transaction, you can proceed with generating the certificate
     try {
       // Proceed with the transaction
-      const tid =  "xxxxxxxxxx" //await sendEth(wallet);
+      const tid = "xxxxxxxxxx"; //await sendEth(wallet);
       setLoading(true);
       const res = await fetch(`${baseUrl}mint_certificate/`, {
         method: "POST",
@@ -92,57 +92,61 @@ const ResultPage = () => {
       // Chain addition code remains the same
       try {
         await provider.request({
-          method: 'wallet_addEthereumChain',
-          params: [{
-            chainId: '0x98a',
-            chainName: 'Polygon zkEVM Testnet',
-            nativeCurrency: {
-              name: 'Ethereum',
-              symbol: 'ETH',
-              decimals: 18
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: "0x98a",
+              chainName: "Polygon zkEVM Testnet",
+              nativeCurrency: {
+                name: "Ethereum",
+                symbol: "ETH",
+                decimals: 18,
+              },
+              rpcUrls: ["https://rpc.cardona.zkevm-rpc.com/"],
+              blockExplorerUrls: ["https://cardona-zkevm.polygonscan.com/"],
             },
-            rpcUrls: ['https://rpc.cardona.zkevm-rpc.com/'],
-            blockExplorerUrls: ['https://cardona-zkevm.polygonscan.com/']
-          }]
+          ],
         });
       } catch (addError) {
         console.log("Chain might already be added or user rejected addition");
       }
-  
+
       // Chain switching code remains the same
       await provider.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: '0x98a' }], // PolygonZKEVM testnet chain ID
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: "0x98a" }], // PolygonZKEVM testnet chain ID
       });
-  
+
       // Get the current ETH price in USD
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+      const response = await fetch(
+        "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd"
+      );
       const data = await response.json();
       const ethPrice = data.ethereum.usd;
-  
+
       // Calculate the amount of ETH equivalent to 1 USD
       const ethAmount = 1 / ethPrice;
       const weiAmount = ethAmount * 1e18; // Convert ETH to Wei
-  
+
       const txParams = {
         from: fromAddress,
         to: "0xf22756f18828b857c8252b4B735907fA9Ba24C9b",
-        value: '0x' + Math.round(weiAmount).toString(16), // Convert to hex
+        value: "0x" + Math.round(weiAmount).toString(16), // Convert to hex
         gasLimit: "0x5208", // 21000 gas (standard transaction)
       };
-  
+
       // Get the current gas price
       const gasPrice = await provider.request({
-        method: 'eth_gasPrice',
+        method: "eth_gasPrice",
       });
-  
+
       txParams.gasPrice = gasPrice;
-  
+
       const txHash = await provider.request({
         method: "eth_sendTransaction",
         params: [txParams],
       });
-  
+
       console.log("Transaction hash:", txHash);
       return txHash;
     } catch (error) {
@@ -150,7 +154,7 @@ const ResultPage = () => {
       toast.error("Transaction error ❌");
       throw error;
     }
-  }
+  };
 
   return loading ? (
     <SpinLoader />
@@ -195,6 +199,7 @@ const ResultPage = () => {
                   className="cssbuttons-io-button"
                   onClick={() => {
                     getCerti();
+                    // setPopup(true);
                   }}
                 >
                   <span>Get NFT Certificate</span>
@@ -207,6 +212,14 @@ const ResultPage = () => {
                   <span>Connect wallet</span>
                 </button>
               )}
+              <button
+                className="cssbuttons-io-button"
+                onClick={() => {
+                  setPopup(true);
+                }}
+              >
+                <span>Feedback</span>
+              </button>
             </div>
           </div>
         </div>

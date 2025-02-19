@@ -16,8 +16,11 @@ import Nft from "./pages/NftList/Nft";
 import { AlephiumWalletProvider } from "@alephium/web3-react";
 import AdminLoginPage from "./pages/LoginPage/LoginPage";
 import SignUpPage from "./pages/signup/SignUp";
+import FeedbackPopup from "./components/Feedback/Feedback";
+import { useState } from "react";
 
 function App() {
+  const [popUp, setPopup] = useState(false);
   return (
     <AlephiumWalletProvider useTheme="retro">
       <StoreProvider>
@@ -29,13 +32,20 @@ function App() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/certification" element={<Certificate />} />
-            <Route path="/result" element={<ResultPage />} />
+            <Route
+              path="/certification"
+              element={<Certificate popUp={popUp} setPopup={setPopup} />}
+            />
+            <Route
+              path="/result"
+              element={<ResultPage popUp={popUp} setPopup={setPopup} />}
+            />
             <Route path="/nft" element={<Nft />} />
             <Route path="*" element={<PageNotFound />} />
             <Route path="/login" element={<AdminLoginPage />} />
             <Route path="/signup" element={<SignUpPage />} />
           </Routes>
+          {popUp && <FeedbackPopup popUp={popUp} setPopup={setPopup} />}
         </div>
       </StoreProvider>
     </AlephiumWalletProvider>

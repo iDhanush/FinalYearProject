@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.scss";
+import { baseUrl } from "../../constant";
+import { useStore } from "../../context/StoreContext";
 // import logo from "../../assets/images/logo.svg"; // Make sure to add your logo file
 
 const AdminLoginPage = ({ onLogin }) => {
+  const { user, setUser } = useStore();
+
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -17,15 +21,41 @@ const AdminLoginPage = ({ onLogin }) => {
     setIsLoading(true);
 
     try {
-      if (email === admin?.[0]?.email && password === admin?.[0]?.pass) {
-        navigate("/admin/users");
-        localStorage.setItem("isAdmin", "true");
-        onLogin?.(); // Call onLogin callback if provided
-      } else {
-        setError("Invalid email or password. Please try again.");
+      // Create FormData object
+      const formData = new URLSearchParams();
+      formData.append("grant_type", "password");
+      formData.append("username", email);
+      formData.append("password", password);
+      formData.append("scope", "");
+      formData.append("client_id", "");
+      formData.append("client_secret", "");
+
+      const response = await fetch(`${baseUrl}login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          "ngrok-skip-browser-warning": "69420",
+        },
+        body: formData.toString(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      // Handle successful login
+      if (data.access_token) {
+        localStorage.setItem("user", data);
+        setUser(data);
+        // You might want to store other data from the response
+        onLogin && onLogin(data);
+        navigate("/");
       }
     } catch (error) {
-      setError("An error occurred. Please try again later.");
+      setError(error.message || "Something went wrong. Please try again.");
+      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -50,9 +80,9 @@ const AdminLoginPage = ({ onLogin }) => {
 
           <form onSubmit={handleSubmit} className="login-form">
             <div className="form-group">
-              <label htmlFor="email">Email Address</label>
+              <label htmlFor="email">Username</label>
               <input
-                type="email"
+                type="text"
                 id="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
