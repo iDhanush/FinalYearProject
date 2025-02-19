@@ -14,6 +14,7 @@ import ResultPage from "./pages/ResultPage/ResultPage";
 import Nft from "./pages/NftList/Nft";
 
 import { AlephiumWalletProvider } from "@alephium/web3-react";
+import AdminLoginPage from "./pages/LoginPage/LoginPage";
 
 function App() {
   return (
@@ -31,6 +32,8 @@ function App() {
             <Route path="/result" element={<ResultPage />} />
             <Route path="/nft" element={<Nft />} />
             <Route path="*" element={<PageNotFound />} />
+            <Route path="/login" element={<AdminLoginPage/>} />
+            <Route path="/signup" element={''} />
           </Routes>
         </div>
       </StoreProvider>
