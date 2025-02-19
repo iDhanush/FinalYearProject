@@ -11,20 +11,21 @@ const Nft = () => {
   const { wallet } = useStore();
   const [certificates, setCertificates] = useState([]);
   const [loader, setLoader] = useState(false);
-
+  const { user, setUser } = useStore();
   useEffect(() => {
     const fetchCerti = async () => {
       try {
         setLoader(true);
-        const response = await fetch(`${baseUrl}cert/${wallet}`, {
+        const response = await fetch(`${baseUrl}my_certificates`, {
           method: "get",
+          credentials: "include",
           headers: new Headers({
             "ngrok-skip-browser-warning": "69420",
           }),
         });
         const result = await response.json();
-        console.log(result.nfts);
-        setCertificates(result.nfts);
+        console.log(result);
+        setCertificates(result);
         setLoader(false);
       } catch (err) {
         setLoader(false);
@@ -36,7 +37,7 @@ const Nft = () => {
 
   return (
     <div className="nft-page">
-      {wallet ? (
+      {user != null ? (
         <>
           <div className="sec-head">My certificates</div>
           {loader ? (
@@ -47,17 +48,17 @@ const Nft = () => {
                 certificates?.map((cert, index) => (
                   <div key={index} className="nft-card">
                     <div className="card-top">
-                      <img src={ALPH} width={32} height={32} alt="Alephium logo" />
+                      {/* <img src={ALPH} width={32} height={32} alt="Alephium logo" /> */}
                     </div>
                     <div className="certi-container">
                       <img
-                        src={`${cert.uri.image}`}
+                        src={`${baseUrl}certificate/${cert.certificate_uid}`}
                         className="certi-img"
                         alt="Certificate"
                       />
                       <a
                         className="view-btn"
-                        href={cert.uri.image}
+                        href={`${baseUrl}certificate/${cert.certificate_uid}`}
                         download={true}
                       >
                         <svg
@@ -75,9 +76,9 @@ const Nft = () => {
                       </a>
                     </div>
                     <div className="card-name">
-                      {cert.uri.name || "Certificate"}
+                      {"Certificate"}
                     </div>
-                    <a className="view-poly-btn" href={cert.uri.image} download={true} >
+                    <a className="view-poly-btn" href={`${baseUrl}certificate/${cert.certificate_uid}`} download={true} >
                       Download Certificate
                     </a>
                   </div>
@@ -94,7 +95,7 @@ const Nft = () => {
           )}
         </>
       ) : (
-        <div className="connect-txt">Please connect your wallet 😧</div>
+        <div className="connect-txt">Please Login First 😧</div>
       )}
     </div>
   );
