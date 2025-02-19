@@ -14,6 +14,11 @@ dist-ssr
 
 # Editor directories and files
 .vscode/*
+assets/*
+certi_temp_html/*
+certificates/*
+__pycache__
+
 !.vscode/extensions.json
 .idea
 .DS_Store
