@@ -34,11 +34,11 @@ function App() {
             <Route path="/pricing" element={<Pricing />} />
             <Route
               path="/certification"
-              element={<Certificate popUp={popUp} setPopup={setPopup} />}
+              element={<Certificate/>}
             />
             <Route
               path="/result"
-              element={<ResultPage popUp={popUp} setPopup={setPopup} />}
+              element={<ResultPage/>}
             />
             <Route path="/nft" element={<Nft />} />
             <Route path="*" element={<PageNotFound />} />

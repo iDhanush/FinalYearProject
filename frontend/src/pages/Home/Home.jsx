@@ -14,9 +14,9 @@ const Home = () => {
 
         <Tabs />
       </div>
-      <div className="img-sec">
+      {/* <div className="img-sec">
         <img src={IMG} className="main-img" alt="" />
-      </div>
+      </div> */}
     </div>
   );
 };
