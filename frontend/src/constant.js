@@ -1,0 +1,1 @@
+export  const baseUrl="https://hackathon.eventzo.org/api";
