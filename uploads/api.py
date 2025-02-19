@@ -1,7 +1,5 @@
 from typing import Annotated
-
 from fastapi import APIRouter, UploadFile, File, HTTPException, Depends
-
 from auth.api import get_current_optional_user_from_cookie
 from utils import (invoke_uid, image_extensions, video_extensions, is_youtube_url, yt_downloader,
                    is_instagram_url,
