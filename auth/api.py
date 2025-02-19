@@ -157,8 +157,8 @@ async def login(
         httponly=True,  # Prevents JavaScript access
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
-        secure=True,  # Requires HTTPS
-        samesite="lax"  # Provides CSRF protection
+        secure=False,  # Change to False for local development
+        samesite="none",  # Change to "None" if frontend and backend have different origins
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
