@@ -37,7 +37,7 @@ async def mint_certificate(post_data: PostData,
     create_certificate(
         round(prediction.get('real') * 100, 2),
         round(prediction.get('fake') * 100, 2),
-        file_hash, userid,
+        file_hash, f"{user.get('full_name')} | {user.get('email')}",
         certificate_uid, datetime.datetime.now().date(), certificate_uid)
     certificate_data = CertificateData(certificate_uid=certificate_uid,
                                        user_id=userid,
@@ -45,10 +45,8 @@ async def mint_certificate(post_data: PostData,
     await Var.db.certDB.insert_one(certificate_data.model_dump())
     return certificate_data.model_dump()
 
+
 @cert_router.get('/my_certificates')
 async def my_certificates(user: Annotated[dict, Depends(get_current_user_from_cookie)] = None):
-    if user:
-        userid = str(user.get('_id'))
-    else:
-        userid = 'xxx'
-    return await Var.db.certDB.find({'user_id': userid}).to_list(length=None)
+    userid = str(user.get('_id'))
+    return await Var.db.certDB.find({'user_id': userid}, {'_id': 0}).to_list(None)

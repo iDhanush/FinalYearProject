@@ -19,7 +19,7 @@ service = Service()  # Replace with your chromedriver path if needed
 driver = webdriver.Chrome(service=service, options=chrome_options)
 
 
-def html_parser(real_percentage, fake_percentage, file_hash, issued_for, collection_id, date):
+def html_parser(real_percentage, fake_percentage, file_hash, issued_for, certificate_uid, date):
     return f"""
 <!DOCTYPE html>
 <html lang="en">
@@ -222,8 +222,8 @@ def html_parser(real_percentage, fake_percentage, file_hash, issued_for, collect
                 <div class="divider"></div>
               </div>
               <div class="certi-grp">
-                <div class="grp-title">Collection ID & Token ID</div>
-                <div class="grp-name certi-id">{collection_id}</div>
+                <div class="grp-title">Certificate Unique ID</div>
+                <div class="grp-name certi-id">{certificate_uid}</div>
                 <div class="divider"></div>
               </div>
             </div>
