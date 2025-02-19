@@ -30,9 +30,13 @@ async def upload_file(file: UploadFile = File(...),
 
 
 @upload_router.get("/link/upload")
-async def upload_link(client_address: str, link: str):
+async def upload_link(user: Annotated[dict, Depends(get_current_optional_user_from_cookie)], link: str):
     print(link)
-    fid = f'{client_address}_{invoke_uid()}.mp4'
+    if not user:
+        userid = 'xxx'
+    else:
+        userid = str(user['_id'])
+    fid = f'{userid}_{invoke_uid()}.mp4'
     if is_youtube_url(link):
         yt_downloader(link, fid)
     elif is_instagram_url(link):
