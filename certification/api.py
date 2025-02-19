@@ -2,7 +2,7 @@ import datetime
 from typing import Annotated
 
 from PIL import Image
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
 from auth.api import get_current_user_from_cookie
@@ -46,4 +46,10 @@ async def mint_certificate(post_data: PostData, user: Annotated[dict, Depends(ge
 @cert_router.get('/my_certificates')
 async def my_certificates(user: Annotated[dict, Depends(get_current_user_from_cookie)] = None):
     userid = str(user.get('_id'))
-    return await Var.db.certDB.find({'user_id': userid}, {'_id': 0}).to_list(None)
+    return await Var.db.certDB.find({}, {'_id': 0}).to_list(None)
+
+@cert_router.get('/all_certificates')
+async def all_certificates(user: Annotated[dict, Depends(get_current_user_from_cookie)] = None):
+    if not user.get('is_superuser', False):
+        raise HTTPException(401, 'nono')
+    return await Var.db.certDB.find({}, {'_id': 0}).to_list(None)
