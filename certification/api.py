@@ -5,7 +5,7 @@ from PIL import Image
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
-from auth.api import get_current_optional_user_from_cookie, get_current_user_from_cookie
+from auth.api import get_current_user_from_cookie
 from certification.certificate import create_certificate
 from global_var import Var
 from unmask.unmasker import unmask_image
@@ -25,12 +25,9 @@ class CertificateData(BaseModel):
 
 
 @cert_router.post('/mint_certificate')
-async def mint_certificate(post_data: PostData,
-                           user: Annotated[dict, Depends(get_current_optional_user_from_cookie)] = None):
-    if user:
-        userid = str(user.get('_id'))
-    else:
-        userid = 'xxx'
+async def mint_certificate(post_data: PostData, user: Annotated[dict, Depends(get_current_user_from_cookie)] = None):
+    userid = str(user.get('_id'))
+    print(user)
     prediction = unmask_image(Image.open(f'assets/{post_data.file_uid}'))
     file_hash = file_to_sha256(f'assets/{post_data.file_uid}')
     certificate_uid = f"{userid}_{invoke_uid()}.png"
