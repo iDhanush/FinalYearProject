@@ -68,19 +68,17 @@ const ResultPage = () => {
       // Proceed with the transaction
       const tid =  "xxxxxxxxxx" //await sendEth(wallet);
       setLoading(true);
-      const res = await fetch(`${baseUrl}/mint_certificate/`, {
+      const res = await fetch(`${baseUrl}mint_certificate/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          transction_id: tid,
-          user_address: wallet,
           file_uid: finalResult?.fid,
         }),
       });
       const result = await res.json();
-      setCertiId(result.certificate_url);
+      setCertiId(`${baseUrl}certificate/${result.certificate_uid}`);
       console.log(result);
       setLoading(false);
       navigate("/certification");
@@ -162,7 +160,7 @@ const ResultPage = () => {
         <h1 className="result-head">Analysis</h1>
         <div className="result-grid">
           <div className="result-grid-left">
-            <img src={`${baseUrl}/dwd/${finalResult?.fid}`} alt="" />
+            <img src={`${baseUrl}dwd/${finalResult?.fid}`} alt="" />
           </div>
           <div className="result-grid-right">
             <div className="progress-grp">
@@ -192,7 +190,7 @@ const ResultPage = () => {
               </div>
             </div>
             <div className="btns">
-              {wallet ? (
+              {!wallet ? (
                 <button
                   className="cssbuttons-io-button"
                   onClick={() => {

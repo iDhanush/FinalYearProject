@@ -21,7 +21,7 @@ const LinkTab = () => {
   const { wallet } = useStore();
   
   const getImages = async (id) => {
-    const res = await fetch(`${baseUrl}/split_vid?fid=${id}`, {
+    const res = await fetch(`${baseUrl}split_vid?fid=${id}`, {
       method: "get",
       headers: new Headers({
         "ngrok-skip-browser-warning": "69420",
@@ -48,7 +48,7 @@ const LinkTab = () => {
 
   const imageRedirect = async (id) => {
     try {
-      const res = await fetch(`${baseUrl}/unmask/${wallet}/${id}`, {
+      const res = await fetch(`${baseUrl}unmask/{id}`, {
         method: "get",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -70,7 +70,7 @@ const LinkTab = () => {
           {result.map((item, index) => (
             <img
               key={index}
-              src={`${baseUrl}/dwd/${item}`}
+              src={`${baseUrl}dwd/${item}`}
               alt="shot-img"
               className="img-shot"
               onClick={() => imageRedirect(item)}

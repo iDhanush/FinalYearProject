@@ -30,7 +30,7 @@ const FileTab = () => {
   });
 
   const getInfo = async (id) => {
-    const res = await fetch(`${baseUrl}/unmask/${wallet}/${id}`, {
+    const res = await fetch(`${baseUrl}unmask/${id}`, {
       method: "get",
       headers: new Headers({
         "ngrok-skip-browser-warning": "69420",
@@ -52,7 +52,7 @@ const FileTab = () => {
 
     try {
       setLoader(true);
-      const response = await fetch(`${baseUrl}/file/${wallet}/upload`, {
+      const response = await fetch(`${baseUrl}file/upload`, {
         method: "POST",
         body: formData,
       });
@@ -65,7 +65,7 @@ const FileTab = () => {
         // toast.success("video");
         // handle video
         const getImages = async () => {
-          const res = await fetch(`${baseUrl}/split_vid?fid=${result.id}`, {
+          const res = await fetch(`${baseUrl}split_vid?fid=${result.id}`, {
             method: "get",
             headers: new Headers({
               "ngrok-skip-browser-warning": "69420",
@@ -97,7 +97,7 @@ const FileTab = () => {
 
   const imageRedirect = async (id) => {
     try {
-      const res = await fetch(`${baseUrl}/unmask/${wallet}/${id}`, {
+      const res = await fetch(`${baseUrl}unmask/${id}`, {
         method: "get",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
@@ -119,7 +119,7 @@ const FileTab = () => {
           {result?.map((item, index) => (
             <img
               key={index}
-              src={`${baseUrl}/dwd/${item}`}
+              src={`${baseUrl}dwd/${item}`}
               alt="shot-img"
               className="img-shot"
               onClick={() => imageRedirect(item)}

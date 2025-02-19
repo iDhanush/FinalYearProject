@@ -1,1 +1,1 @@
-export  const baseUrl="https://hackathon.eventzo.org/api";
+export  const baseUrl="http://localhost:8000/api/";

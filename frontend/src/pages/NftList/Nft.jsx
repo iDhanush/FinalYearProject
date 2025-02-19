@@ -16,7 +16,7 @@ const Nft = () => {
     const fetchCerti = async () => {
       try {
         setLoader(true);
-        const response = await fetch(`${baseUrl}/cert/${wallet}`, {
+        const response = await fetch(`${baseUrl}cert/${wallet}`, {
           method: "get",
           headers: new Headers({
             "ngrok-skip-browser-warning": "69420",
