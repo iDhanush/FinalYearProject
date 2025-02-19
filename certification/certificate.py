@@ -7,17 +7,18 @@ from selenium.webdriver.support import expected_conditions as EC
 from PIL import Image
 # Create the certificates directory if it doesn't exist
 os.makedirs("certificates", exist_ok=True)
-
+print('loading chrome driver')
 chrome_options = Options()
 chrome_options.add_argument("--start-maximized")  # Start maximized
 chrome_options.add_argument("--disable-gpu")
+chrome_options.add_argument("--headless")
 chrome_options.add_argument("--disable-infobars")
 chrome_options.add_argument("--disable-extensions")
 
 # Set up WebDriver
 service = Service()  # Replace with your chromedriver path if needed
 driver = webdriver.Chrome(service=service, options=chrome_options)
-
+print('loaded chrome driver')
 
 def html_parser(real_percentage, fake_percentage, file_hash, issued_for, certificate_uid, date):
     return f"""
