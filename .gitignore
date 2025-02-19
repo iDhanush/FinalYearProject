@@ -11,14 +11,15 @@ node_modules
 dist
 dist-ssr
 *.local
-
+*~
+.env
 # Editor directories and files
 .vscode/*
 assets/*
 certi_temp_html/*
 certificates/*
 __pycache__
-
+resnetinceptionv1_epoch_32.pth
 !.vscode/extensions.json
 .idea
 .DS_Store
