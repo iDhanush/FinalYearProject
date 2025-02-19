@@ -73,8 +73,11 @@ def yt_downloader(url, file_uid):
         'format': 'bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/best[height<=360][ext=mp4]/best[height<=360]',
         'outtmpl': f'assets/{file_uid}',
     }
-    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([url])
+    try:
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+    except Exception as ex:
+        print(ex)
 
 
 def insta_downloader(url, fid):
