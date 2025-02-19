@@ -23,15 +23,12 @@ const AdminLoginPage = ({ onLogin }) => {
     try {
       // Create FormData object
       const formData = new URLSearchParams();
-      formData.append("grant_type", "password");
       formData.append("username", email);
       formData.append("password", password);
-      formData.append("scope", "");
-      formData.append("client_id", "");
-      formData.append("client_secret", "");
 
       const response = await fetch(`${baseUrl}login`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           "ngrok-skip-browser-warning": "69420",

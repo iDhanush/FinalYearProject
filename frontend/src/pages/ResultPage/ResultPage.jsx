@@ -70,6 +70,7 @@ const ResultPage = ({ popUp, setPopup }) => {
       setLoading(true);
       const res = await fetch(`${baseUrl}mint_certificate/`, {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
