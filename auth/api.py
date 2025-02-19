@@ -15,7 +15,7 @@ auth_router = APIRouter()
 # JWT Settings
 SECRET_KEY = Var.SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = 60*24*350
 
 # Password hashing
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -158,7 +158,63 @@ async def login(
         max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         secure=False,  # Change to False for local development
-        samesite="none",  # Change to "None" if frontend and backend have different origins
+        samesite="lax",  # Change to "None" if frontend and backend have different origins
+    )
+
+    return {"access_token": access_token, "token_type": "bearer"}
+
+
+
+@auth_router.post("/admin-login", response_model=Token)
+async def login(
+        response: Response,
+        form_data: Annotated[OAuth2PasswordRequestForm, Depends()]
+):
+    # Find user by username
+    user = await Var.db.userDB.find_one({"username": form_data.username})
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    if user.get('is_superuser', False) is False:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    # Verify password
+    if not verify_password(form_data.password, user["hashed_password"]):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    # Check if user is disabled
+    if user.get("disabled", False):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Inactive user"
+        )
+
+    # Create access token
+    access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        data={"sub": user["username"]},
+        expires_delta=access_token_expires
+    )
+
+    # Set cookie
+    response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,  # Prevents JavaScript access
+        max_age=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        expires=ACCESS_TOKEN_EXPIRE_MINUTES * 60,
+        secure=False,  # Change to False for local development
+        samesite="lax",  # Change to "None" if frontend and backend have different origins
     )
 
     return {"access_token": access_token, "token_type": "bearer"}
