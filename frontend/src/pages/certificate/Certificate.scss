@@ -7,7 +7,7 @@
   align-items: center;
   gap: 20px;
 
-  a{
+  .btn{
     display: flex;
     align-items: center;
     font-family: inherit;
@@ -28,6 +28,7 @@
     cursor: pointer;
     text-decoration: none;
     gap: 10px;
+    height: 60px;
   }
 
   .cssbuttons-io-button svg {
@@ -40,6 +41,11 @@
 
   .cssbuttons-io-button:active {
     box-shadow: 0 0.3em 1em -0.5em #4d36d0be;
+  }
+  .flex-grp{
+    display: flex;
+    align-items: center;
+    gap: 20px;
   }
 }
 .certificate {
