@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --background-color: #f8fafc;
+            --card-background: #ffffff;
+            --error-color: #dc2626;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background-color: var(--background-color);
+        }
+
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-form {
+            background: var(--card-background);
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            width: 300px;
+        }
+
+        .login-form h2 {
+            margin-top: 0;
+            color: #1e293b;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: opacity 0.2s;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .admin-panel {
+            display: none;
+            padding: 2rem;
+            position: relative;
+        }
+
+        .nav-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+        }
+
+        .nav-button {
+            background: none;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-button.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .logout-button {
+            background-color: #dc2626;
+            margin-left: auto;
+        }
+
+        .certificates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .certificate-card {
+            background: var(--card-background);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .certificate-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .certificate-image {
+            width: 100%;
+            height: 200px;
+            object-fit: contain;
+            background: #f1f5f9;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .feedback-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .feedback-item {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .download-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin-top: 1rem;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container" id="loginContainer">
+        <form class="login-form" id="loginForm">
+            <h2>Admin Login</h2>
+            <div class="form-group">
+                <input type="text" id="username" placeholder="Username" required>
+            </div>
+            <div class="form-group">
+                <input type="password" id="password" placeholder="Password" required>
+            </div>
+            <button type="submit">Login</button>
+            <div class="error-message" id="loginError"></div>
+        </form>
+    </div>
+
+    <div class="admin-panel" id="adminPanel">
+        <div class="nav-bar">
+            <button class="nav-button active" onclick="switchTab('certificates')">Certificates</button>
+            <button class="nav-button" onclick="switchTab('feedbacks')">Feedbacks</button>
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+
+        <div id="certificatesSection">
+            <h3>Certificates</h3>
+            <div class="certificates-grid" id="certificatesGrid"></div>
+        </div>
+
+        <div id="feedbacksSection" style="display: none;">
+            <h3>Feedbacks</h3>
+            <div class="feedback-list" id="feedbackList"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api';
+        let currentTab = 'certificates';
+
+        // Login handler
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorElement = document.getElementById('loginError');
+            errorElement.textContent = '';
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            try {
+                const formData = new URLSearchParams();
+                formData.append('username', username);
+                formData.append('password', password);
+                formData.append('grant_type', 'password');
+
+                const response = await fetch(`${API_BASE}/admin-login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Login failed');
+
+                document.getElementById('loginContainer').style.display = 'none';
+                document.getElementById('adminPanel').style.display = 'block';
+                await loadCertificates();
+            } catch (error) {
+                errorElement.textContent = 'Invalid credentials';
+                document.getElementById('loginContainer').style.display = 'flex';
+            }
+        });
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch(`${API_BASE}/admin-logout`, {
+                    method: 'POST',
+                    credentials: 'include'
+                });
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+
+            // Clear session and reset UI
+            document.cookie = 'access_token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            document.getElementById('adminPanel').style.display = 'none';
+            document.getElementById('loginContainer').style.display = 'flex';
+            document.getElementById('loginForm').reset();
+        }
+
+        // Data loading functions
+        async function loadCertificates() {
+            try {
+                const response = await fetch(`${API_BASE}/all_certificates`, {
+                    credentials: 'include'
+                });
+                const certificates = await response.json();
+                renderCertificates(certificates);
+            } catch (error) {
+                console.error('Error loading certificates:', error);
+                showError('Failed to load certificates');
+            }
+        }
+
+        async function loadFeedbacks() {
+            try {
+                const response = await fetch(`${API_BASE}/view-feedbacks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feedback: "", file_uid: "" }),
+                    credentials: 'include'
+                });
+
+                if (!response.ok) throw new Error('Failed to load feedbacks');
+
+                const feedbacks = await response.json();
+                renderFeedbacks(feedbacks);
+            } catch (error) {
+                console.error('Error loading feedbacks:', error);
+                showError('Failed to load feedbacks');
+            }
+        }
+
+        // Rendering functions
+        function renderCertificates(certificates) {
+            const grid = document.getElementById('certificatesGrid');
+            grid.innerHTML = certificates.map(cert => `
+                <div class="certificate-card">
+                    <img class="certificate-image" src="/api/certificate/${cert.certificate_uid}" alt="Certificate">
+                    <p><strong>User ID:</strong> ${cert.user_id}</p>
+                    <p><strong>Prediction:</strong> ${cert.prediction.prediction}</p>
+                    <p><strong>Real:</strong> ${(cert.prediction.real * 100).toFixed(2)}%</p>
+                    <p><strong>Fake:</strong> ${(cert.prediction.fake * 100).toFixed(2)}%</p>
+                </div>
+            `).join('');
+        }
+
+        function renderFeedbacks(feedbacks) {
+            const list = document.getElementById('feedbackList');
+            list.innerHTML = feedbacks.map(fb => `
+                <div class="feedback-item">
+                    <p><strong>Feedback:</strong> ${fb.feedback}</p>
+                    <p><strong>User ID:</strong> ${fb.user_id}</p>
+                    <a class="download-link" href="/dwd/${fb.file_uid}" target="_blank">
+                        Download Associated File
+                    </a>
+                </div>
+            `).join('');
+        }
+
+        // Tab management
+        function switchTab(tab) {
+            if (tab === currentTab) return;
+
+            document.getElementById(`${currentTab}Section`).style.display = 'none';
+            document.querySelector(`.nav-button[onclick="switchTab('${currentTab}')"]`).classList.remove('active');
+
+            currentTab = tab;
+            document.getElementById(`${tab}Section`).style.display = 'block';
+            document.querySelector(`.nav-button[onclick="switchTab('${tab}')"]`).classList.add('active');
+
+            if (tab === 'feedbacks') loadFeedbacks();
+        }
+
+        // Initialization
+        (async function init() {
+            try {
+                // Check existing session
+                const response = await fetch(`${API_BASE}/view-feedbacks`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ feedback: "", file_uid: "" }),
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    document.getElementById('loginContainer').style.display = 'none';
+                    document.getElementById('adminPanel').style.display = 'block';
+                    await loadCertificates();
+                } else {
+                    document.getElementById('loginContainer').style.display = 'flex';
+                }
+            } catch (error) {
+                document.getElementById('loginContainer').style.display = 'flex';
+            }
+        })();
+
+        // Utility functions
+        function showError(message) {
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error-message';
+            errorElement.textContent = message;
+            document.body.appendChild(errorElement);
+            setTimeout(() => errorElement.remove(), 3000);
+        }
+    </script>
+</body>
+</html>
