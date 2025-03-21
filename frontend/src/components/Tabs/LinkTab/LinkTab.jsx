@@ -48,7 +48,7 @@ const LinkTab = () => {
 
   const imageRedirect = async (id) => {
     try {
-      const res = await fetch(`${baseUrl}unmask/{id}`, {
+      const res = await fetch(`${baseUrl}unmask/${id}`, {
         method: "get",
         headers: new Headers({
           "ngrok-skip-browser-warning": "69420",
