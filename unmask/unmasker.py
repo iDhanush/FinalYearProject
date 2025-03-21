@@ -54,22 +54,22 @@ def unmask_image(input_image: Image.Image):
     face_found = face_found.unsqueeze(0)  # add the batch dimension
     face_found = F.interpolate(face_found, size=(256, 256), mode='bilinear', align_corners=False)
 
-    # convert the face into a numpy array to be able to plot it
-    prev_face = face_found.squeeze(0).permute(1, 2, 0).cpu().detach().int().numpy()
-    prev_face = prev_face.astype('uint8')
-
+    # # convert the face into a numpy array to be able to plot it
+    # prev_face = face_found.squeeze(0).permute(1, 2, 0).cpu().detach().int().numpy()
+    # prev_face = prev_face.astype('uint8')
+    #
     face_found = face_found.to(DEVICE).to(torch.float32)
     face_found = face_found / 255.0
-    face_image_to_plot = face_found.squeeze(0).permute(1, 2, 0).cpu().detach().int().numpy()
-
-    target_layers = [model.block8.branch1[-1]]
-    use_cuda = True if torch.cuda.is_available() else False
-    cam = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
-    targets = [ClassifierOutputTarget(0)]
-
-    grayscale_cam = cam(input_tensor=face_found, targets=targets, eigen_smooth=True)
-    grayscale_cam = grayscale_cam[0, :]
-    visualization = show_cam_on_image(face_image_to_plot, grayscale_cam, use_rgb=True)
-    face_with_mask = cv2.addWeighted(prev_face, 1, visualization, 0.5, 0)
+    # face_image_to_plot = face_found.squeeze(0).permute(1, 2, 0).cpu().detach().int().numpy()
+    #
+    # target_layers = [model.block8.branch1[-1]]
+    # use_cuda = True if torch.cuda.is_available() else False
+    # cam = GradCAM(model=model, target_layers=target_layers, use_cuda=use_cuda)
+    # targets = [ClassifierOutputTarget(0)]
+    #
+    # grayscale_cam = cam(input_tensor=face_found, targets=targets, eigen_smooth=True)
+    # grayscale_cam = grayscale_cam[0, :]
+    # visualization = show_cam_on_image(face_image_to_plot, grayscale_cam, use_rgb=True)
+    # face_with_mask = cv2.addWeighted(prev_face, 1, visualization, 0.5, 0)
     prediction = get_confidences(face_found)
     return prediction
