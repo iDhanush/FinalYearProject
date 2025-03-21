@@ -2,12 +2,11 @@ fastapi~=0.115.8
 uvicorn~=0.34.0
 pymongo~=4.11.1
 pymongo[srv]
-python-dotenv
+python-dotenv~=1.0.1
 pydantic~=2.10.6
 motor~=3.7.0
 PyJWT~=2.10.1
 passlib~=1.7.4
-starlette~=0.45.3
 pydantic[email]
 python-multipart
 bcrypt
@@ -15,7 +14,12 @@ bcrypt
 gradio==3.39.0
 Pillow==9.4.0
 facenet-pytorch==2.5.2
-torch==1.11.0
+torch~=2.6.0+cu118
 opencv-python==4.7.0.72
 facenet-pytorch==2.5.2
 grad-cam==1.4.6
+
+transformers~=4.50.0
+
+requests~=2.32.3
+selenium~=4.28.1
