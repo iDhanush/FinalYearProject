@@ -24,6 +24,11 @@ async def unmasker(file_uid: str):
         return {'status': 'pending', 'type': ftype}
 
     file = Image.open(f"assets/{file_uid}")
+
+    # Convert image to RGB if it's not already (handles RGBA to RGB conversion)
+    file = file.convert('RGB')
+
+    # Proceed with unmasking
     prediction = unmask_image(file)
     res = {'prediction': prediction,
            'status': 'finish',
@@ -31,7 +36,6 @@ async def unmasker(file_uid: str):
            'fid': file_uid,
            'hash': file_to_sha256(f'assets/{file_uid}')}
     return res
-
 
 @unmask_router.get("/split_vid")
 async def upload_file(fid: str):
